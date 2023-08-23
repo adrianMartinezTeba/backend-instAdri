@@ -84,6 +84,14 @@ const UserController = {
       console.error(error);
     }
   },
+  async getUsers(req, res) {
+    try {
+      const users = await User.find()
+      res.send(users);
+    } catch (error) {
+      console.error(error);
+    }
+  },
   async recoverPassword(req, res) {
     try {
       const recoverToken = jwt.sign({ email: req.params.email }, process.env.JWT_SECRET, {
