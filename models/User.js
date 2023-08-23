@@ -11,8 +11,8 @@ const UserSchema = new mongoose.Schema(
     email: {
       type: String,
       unique: true,
-      required: [true, "Por favor rellena tu correo electrónico"],
-      match: [/.+\@.+\..+/, "Este correo no es válido"],
+      // required: [true, "Por favor rellena tu correo electrónico"],
+      // match: [/.+\@.+\..+/, "Este correo no es válido"],
     },
     password: {
       type: String,
