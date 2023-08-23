@@ -26,6 +26,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "", // Descripción del usuario
     },
+    tokens:[],
     followers: [{ type: ObjectId, ref: "User" }],
     following: [{ type: ObjectId, ref: "User" }],
     posts: [{ type: ObjectId, ref: "Post" }],
