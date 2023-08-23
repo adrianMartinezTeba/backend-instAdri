@@ -7,12 +7,12 @@ const PostSchema = new mongoose.Schema(
       type: String,
       required: [true, "Por favor rellena tu nombre"],
     },
- description:String,
- likes:[{type:ObjectId,ref:'User'}]
+    description: String,
+    likes: [{ type: ObjectId, ref: 'User' }]
   },
   { timestamps: true }
 );
 
-const User = mongoose.model("User", PostSchema);
+const Post = mongoose.model("Post", PostSchema);
 
-module.exports = User;
+module.exports = Post;
