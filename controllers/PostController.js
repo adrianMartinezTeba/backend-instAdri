@@ -1,7 +1,7 @@
 const Post = require("../models/Post");
 
 const PostController = {
-  async createRoutine(req, res, next) {
+  async create(req, res, next) {
     try {
       const post = await Post.create(req.body);
       res.status(201).send({ message: "Post creado con éxito", post });
@@ -11,7 +11,7 @@ const PostController = {
     }
   },
 
-  async getRoutines(req, res) {
+  async getPosts(req, res) {
     try {
       const posts = await Post.find();
       res.send(posts);
@@ -21,7 +21,7 @@ const PostController = {
     }
   },
 
-  async getRoutineById(req, res) {
+  async getPostById(req, res) {
     try {
       const post = await Post.findById(req.params._id);
       res.send(post);
@@ -31,7 +31,7 @@ const PostController = {
     }
   },
 
-  async updateRoutine(req, res) {
+  async updatePost(req, res) {
     try {
       const updatedPost = await Post.findByIdAndUpdate(
         req.params._id,
@@ -45,7 +45,7 @@ const PostController = {
     }
   },
 
-  async deleteRoutine(req, res) {
+  async deletePost(req, res) {
     try {
       await Post.findByIdAndDelete(req.params._id);
       res.send({ message: "Post eliminado con éxito" });
