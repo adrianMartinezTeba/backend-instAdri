@@ -9,7 +9,7 @@ const UserController = {
       const password = await bcrypt.hash(req.body.password, 10)
       const user = await User.create({ ...req.body, password })
       const emailToken = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET, { expiresIn: '48h' })//incriptado email
-      const url = 'https://back-rutin-adri.vercel.app/users/confirmRegister/' + emailToken
+      const url = 'https://back-inst-adri.vercel.app/users/confirmRegister/' + emailToken
       await transporter.sendMail({
         to: req.body.email,
         subject: "Confirme su registro",
@@ -89,7 +89,7 @@ const UserController = {
       const recoverToken = jwt.sign({ email: req.params.email }, process.env.JWT_SECRET, {
         expiresIn: "48h",
       });
-      const url = 'https://back-rutin-adri.vercel.app' + "/users/resetPassword/" + recoverToken;
+      const url = 'https://back-inst-adri.vercel.app' + "/users/resetPassword/" + recoverToken;
       await transporter.sendMail({
         to: req.params.email,
         subject: "Recuperar contraseña",
