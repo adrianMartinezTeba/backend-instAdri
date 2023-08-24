@@ -1,7 +1,7 @@
 const express = require("express")
 const PostController = require("../controllers/PostController")
 const router = express.Router()
-const upload = require('../middleware/multer'); 
+const upload = require('../middlewares/multer'); 
 
 router.post("/create", upload.single('img'),PostController.create)
 router.delete("/delete/:_id",PostController.deletePost)
