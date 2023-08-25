@@ -5,7 +5,7 @@ const PostController = {
     try {
       const imgPath = req.file.path;
       // añadir author:req.user._id
-      const post = await Post.create({...req.body,image:`${imgPath}`})
+      const post = await Post.create({...req.body,image:imgPath})
       // await User.findByIdAndUpdate(
       //   req.user._id,
       //   {$push:{postIds:post._id}}
