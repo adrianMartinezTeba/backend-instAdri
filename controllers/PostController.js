@@ -1,11 +1,11 @@
 const Post = require("../models/Post");
 
 const PostController = {
-  async create(req, res,next) {
+  async create(req, res) {
     try {
-      const imgPath = req.file.path;
+    
       // añadir author:req.user._id
-      const post = await Post.create({...req.body,image:imgPath})
+      const post = await Post.create({...req.body,image:req.file.path})
       // await User.findByIdAndUpdate(
       //   req.user._id,
       //   {$push:{postIds:post._id}}
@@ -16,7 +16,7 @@ const PostController = {
     } catch (error) {
       console.error(error)
       res.status(500).send({ message: 'Ha habido un problema al crear el post' })
-      next(error);
+     
     }
   },
 

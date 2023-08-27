@@ -16,7 +16,7 @@ app.use("/posts", require("./routes/posts"));
 app.use("/messages", require("./routes/messages"));
 
 app.get("/", (req, res) => {
-    res.send("My name is adrian");
+    res.send("Hello world");
   });
 
 app.listen(PORT, ()=> console.log(`Server started at port ${PORT}`));
