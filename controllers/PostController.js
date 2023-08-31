@@ -1,25 +1,32 @@
 const Post = require("../models/Post");
+const User = require("../models/User");
 
 const PostController = {
-  async create(req, res) {
+  async create(req, res){
     try {
-    
-      // añadir author:req.user._id
-      const post = await Post.create({...req.body,image:req.file.filename})
-      // await User.findByIdAndUpdate(
-      //   req.user._id,
-      //   {$push:{postIds:post._id}}
-      //   )
-        res.status(201).send({message:'Post creado correctamente',post})
-
-
+      const author = await User.findById(req.user._id);
+      
+      if (!author) {
+        return res.status(404).send({ message: 'Usuario no encontrado' });
+      }
+      
+      const post = await Post.create({
+       name:req.body.name,
+       description: req.body.description,
+        image: req.file.filename, // Usar req.file.filename en lugar de req.file.fieldname
+        author: author._id, // Asegurarse de usar _id para el author
+      });
+      
+      // Agregar el ID del nuevo post al usuario
+      author.posts.push(post._id);
+      await author.save();
+      
+      res.status(201).send({ message: 'Post creado correctamente', post,author });
     } catch (error) {
-      console.error(error)
-      res.status(500).send({ message: 'Ha habido un problema al crear el post' })
-     
+      console.error(error);
+      res.status(500).send({ message: 'Ha habido un problema al crear el post' });
     }
   },
-
   async getPosts(req, res) {
     try {
       const posts = await Post.find();
