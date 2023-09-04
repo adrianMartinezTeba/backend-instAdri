@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema(
     email: {
       type: String,
       unique: true,
-      // required: [true, "Por favor rellena tu correo electrónico"],
+      required: [true, "Por favor rellena tu correo electrónico"],
       // match: [/.+\@.+\..+/, "Este correo no es válido"],
     },
     password: {
@@ -20,7 +20,6 @@ const UserSchema = new mongoose.Schema(
     },
     profileImage: {
       type: String, // Puedes almacenar la URL de la imagen de perfil
-      default: "default-profile-image.jpg", // URL por defecto
     },
     bio: {
       type: String,

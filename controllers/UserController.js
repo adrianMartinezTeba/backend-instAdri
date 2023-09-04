@@ -4,32 +4,47 @@ const bcrypt = require("bcryptjs");
 const transporter = require("../config/nodemailer");
 require("dotenv").config();
 const UserController = {
-  async register(req, res) {
-    try {
-      const password = await bcrypt.hash(req.body.password, 10)
-      const user = await User.create({ ...req.body, password })
-      const emailToken = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET, { expiresIn: '48h' })//incriptado email
-      const url = 'https://back-inst-adri.vercel.app/users/confirmRegister/' + emailToken
-      await transporter.sendMail({
-        to: req.body.email,
-        subject: "Confirme su registro",
-        html: `<h3>Bienvenido, estás a un paso de registrarte </h3>
-    <a href="${url}"> Click para confirmar tu registro</a> 
-    Confirme su correo en 48 horas`,
-      }); res.status(201).send({ message: "Usuario registrado con exito", user });
-    } catch (error) {
-      console.error(error);
+async register(req, res) {
+  try {
+    const { file, body: {username,password, email, bio } } = req;
 
-    }
-  },
+    console.log(file);
+    const filename = req.file ? req.file.filename : undefined;
+    console.log(filename);
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({
+      username,
+      email,
+      bio,
+      password: hashedPassword,
+      profileImage:filename
+    });
+
+    const emailToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '48h' });
+    const url = `https://back-inst-adri.vercel.app/users/confirmRegister/${emailToken}`;
+
+    await transporter.sendMail({
+      to: email,
+      subject: "Confirme su registro",
+      html: `<h3>Bienvenido, estás a un paso de registrarte </h3>
+        <a href="${url}"> Click para confirmar tu registro</a> 
+        Confirme su correo en 48 horas`,
+    });
+
+    console.log("Usuario registrado con exito", user);
+    res.status(201).send({ message: "Usuario registrado con exito", user });
+  } catch (error) {
+    console.error(error);
+  }
+},
   async confirm(req, res) {
     try {
       const token = req.params.emailToken;
-  
+
       const payload = jwt.verify(token, process.env.JWT_SECRET); // Usar process.env.JWT_SECRET
-  
+
       await User.findOneAndUpdate({ email: payload.email }, { confirmed: true });
-      res.status(201).send("Usuario confirmado con éxito" );
+      res.status(201).send("Usuario confirmado con éxito");
     } catch (error) {
       console.error(error);
       res.status(500).send(error);
@@ -51,7 +66,7 @@ const UserController = {
       if (user.tokens.length > 4) user.tokens.shift();
       user.tokens.push(token);
       await user.save();
-      res.send({ message: "Bienvenid@ " + user.username,user, token });
+      res.send({ message: "Bienvenid@ " + user.username, user, token });
     } catch (error) {
       console.error(error);
       res.status(500).send(error);

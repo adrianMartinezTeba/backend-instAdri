@@ -4,6 +4,8 @@ const User = require("../models/User");
 const PostController = {
   async create(req, res){
     try {
+      const upFile = req.file
+      console.log(upFile);
       const author = await User.findById(req.user._id);
       
       if (!author) {
