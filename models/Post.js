@@ -5,7 +5,7 @@ const PostSchema = new mongoose.Schema(
   {
     name:{  
      type: String,
-      // required: [true, "Por favor rellena tu nombre"]
+      required: [true, "Por favor rellena tu nombre"]
     },
     image: String,
     description: String,

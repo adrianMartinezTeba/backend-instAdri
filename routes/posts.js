@@ -7,6 +7,8 @@ const { authentication } = require("../middlewares/authentication");
 router.post("/create", authentication,upload.single('image'),PostController.create)
 router.delete("/delete/:_id",PostController.deletePost)
 router.put("/update/:_id", PostController.updatePost)
+router.post("/like/:_id",authentication, PostController.getPosts)
+router.delete("/unLike/:_id",authentication, PostController.deleteLike)
 router.get("/byId/:_id", PostController.getPostById)
 router.get('/all',PostController.getPosts)
 

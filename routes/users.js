@@ -5,12 +5,15 @@ const { authentication } = require("../middlewares/authentication")
 const upload = require('../middlewares/multer'); 
 
 router.post("/register",upload.single('profileImage'), UserController.register);
+router.post("/login", UserController.login);
 router.get("/confirmRegister/:emailToken", UserController.confirm);
 router.get("/all", UserController.getUsers);
-router.post("/login", UserController.login);
-router.delete("/logout",authentication, UserController.logout);
-router.get("/userInfo", authentication,UserController.getInfoById);
 router.get('/recoverPassword/:email', UserController.recoverPassword);
+router.get("/userLog", authentication,UserController.getInfoById);
+router.get("/user/:_id", UserController.getUserById);
+router.post("/follow/:_id",authentication, UserController.followUser);
+router.delete('/unfollow/:_id',authentication, UserController.unFollow);
 router.put("/resetPassword/:recoverToken", UserController.resetPassword);
+router.delete("/logout",authentication, UserController.logout);
 
 module.exports = router;
