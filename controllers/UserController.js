@@ -4,39 +4,39 @@ const bcrypt = require("bcryptjs");
 const transporter = require("../config/nodemailer");
 require("dotenv").config();
 const UserController = {
-async register(req, res) {
-  try {
-    const { file, body: {username,password, email, bio } } = req;
+  async register(req, res) {
+    try {
+      const { file, body: { username, password, email, bio } } = req;
 
-    console.log(file);
-    const filename = req.file ? req.file.filename : undefined;
-    console.log(filename);
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
-      username,
-      email,
-      bio,
-      password: hashedPassword,
-      profileImage:filename
-    });
+      console.log(file);
+      const filename = req.file ? req.file.filename : undefined;
+      console.log(filename);
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await User.create({
+        username,
+        email,
+        bio,
+        password: hashedPassword,
+        profileImage: filename
+      });
 
-    const emailToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '48h' });
-    const url = `https://back-inst-adri.vercel.app/users/confirmRegister/${emailToken}`;
+      const emailToken = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: '48h' });
+      const url = `https://back-inst-adri.vercel.app/users/confirmRegister/${emailToken}`;
 
-    await transporter.sendMail({
-      to: email,
-      subject: "Confirme su registro",
-      html: `<h3>Bienvenido, estás a un paso de registrarte </h3>
+      await transporter.sendMail({
+        to: email,
+        subject: "Confirme su registro",
+        html: `<h3>Bienvenido, estás a un paso de registrarte </h3>
         <a href="${url}"> Click para confirmar tu registro</a> 
         Confirme su correo en 48 horas`,
-    });
+      });
 
-    console.log("Usuario registrado con exito", user);
-    res.status(201).send({ message: "Usuario registrado con exito", user });
-  } catch (error) {
-    console.error(error);
-  }
-},
+      console.log("Usuario registrado con exito", user);
+      res.status(201).send({ message: "Usuario registrado con exito", user });
+    } catch (error) {
+      console.error(error);
+    }
+  },
   async confirm(req, res) {
     try {
       const token = req.params.emailToken;
@@ -93,7 +93,7 @@ async register(req, res) {
   },
   async getInfoById(req, res) {
     try {
-      const user = await User.findById(req.user._id) .populate('posts');
+      const user = await User.findById(req.user._id).populate('posts');
       res.send(user);
     } catch (error) {
       console.error(error);
@@ -141,58 +141,55 @@ async register(req, res) {
       console.error(error);
     }
   },
-async followUser(req, res){
-  const userId  = req.params._id;
-  const loggedInUserId = req.user._id; // Suponiendo que tienes un middleware para autenticar al usuario
-
-  try {
-    // Agrega el usuario seguido a la lista de following del usuario logueado
-   const userWhoFollowed = await User.findByIdAndUpdate(
-      loggedInUserId,
-      { $addToSet: { following: userId } },
-      { new: true }
-    );
-
-    // Agrega el usuario logueado a la lista de followers del usuario seguido
-   const userFollowed = await User.findByIdAndUpdate(
-      userId,
-      { $addToSet: { followers: loggedInUserId } },
-      { new: true }
-    );
-
-    return res.send({ message: 'Usuario seguido exitosamente',userFollowed,userWhoFollowed });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Error al seguir al usuario' });
-  }
-},
-  async unFollow (req, res){
-    const userId  = req.params._id;
+  async followUser(req, res) {
+    const userId = req.params._id;
+    const loggedInUserId = req.user._id; // Suponiendo que tienes un middleware para autenticar al usuario
+    try {
+      // Agrega el usuario seguido a la lista de following del usuario logueado
+      const userWhoFollowed = await User.findByIdAndUpdate(
+        loggedInUserId,
+        { $addToSet: { following: userId } },
+        { new: true }
+      );
+      // Agrega el usuario logueado a la lista de followers del usuario seguido
+      const userFollowed = await User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { followers: loggedInUserId } },
+        { new: true }
+        );
+      return res.send({ message: 'Usuario seguido exitosamente', userFollowed, userWhoFollowed });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Error al seguir al usuario' });
+    }
+  },
+  async unFollow(req, res) {
+    const userId = req.params._id;
     const loggedInUserId = req.user._id;
-  
+
     try {
       const userWhoUnFollow = await User.findByIdAndUpdate(
         loggedInUserId,
         { $pull: { following: userId } },
         { new: true }
       );
-  
+
       const userUnfollowed = await User.findByIdAndUpdate(
         userId,
         { $pull: { followers: loggedInUserId } },
         { new: true }
       );
-  
-      return res.json({ message: 'Dejaste de seguir al usuario exitosamente',userUnfollowed,userWhoUnFollow });
+
+      return res.json({ message: 'Dejaste de seguir al usuario exitosamente', userUnfollowed, userWhoUnFollow });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Error al dejar de seguir al usuario' });
     }
   },
-  async getUserById(req,res){
+  async getUserById(req, res) {
     try {
       const user = await User.findById(req.params._id).populate('posts');
-      res.send({message: "Usuario encontrado",user});
+      res.send({ message: "Usuario encontrado", user });
     } catch (error) {
       console.error(error);
     }

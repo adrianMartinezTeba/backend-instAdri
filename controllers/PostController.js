@@ -73,18 +73,24 @@ const PostController = {
     }
   },
   async likePost(req, res) {
+    const postId = req.params._id;
+    const userId = req.user._id;
     try {
-      const postId = req.params._id;
-      const userId = req.user._id; // Suponiendo que tienes un middleware para autenticar al usuario
       const like = await Post.findByIdAndUpdate(
         postId,
-        { $push: { likes: userId } },
+        { $addToSet: { likes: userId } },
         { new: true }
       );
-      res.send({ message: "Me gusta agregado con exito", like });
+      const userWhoLiked = await User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { likedPosts: postId } },
+        { new: true }
+      );
+
+     return res.send({ message: "Me gusta agregado con exito", like });
     } catch (error) {
       console.error(error);
-      res.status(500).send(error);
+      return res.status(500).send(error);
     }
   },
   async deleteLike(req, res) {
@@ -92,13 +98,13 @@ const PostController = {
     const userId = req.user._id;
 
     try {
-      const post = await Post.findByIdAndUpdate(
+      const unlike = await Post.findByIdAndUpdate(
         postId,
         { $pull: { likes: userId } },
         { new: true }
       );
 
-      return res.send({ message: "Me gusta eliminado con exito", post });
+      return res.send({ message: "Me gusta eliminado con exito", unlike });
     } catch (error) {
       console.error(error);
       return res.status(500).send({ error: 'Error removing like from post' });
