@@ -50,6 +50,16 @@ const UserController = {
       res.status(500).send(error);
     }
   },
+  async searchByName(req, res) {
+    try {
+      const name = req.params.name;
+      const users = await User.find({ username: { $regex: name, $options: "i" } });
+      res.send(users);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: "Ha habido un problema al buscar usuarios por nombre" });
+    }
+  },
   async login(req, res) {
     try {
       const user = await User.findOne({
@@ -93,7 +103,7 @@ const UserController = {
   },
   async getInfoById(req, res) {
     try {
-      const user = await User.findById(req.user._id).populate('posts');
+      const user = await User.findById(req.user._id).populate('posts').populate('followers').populate('following');
       res.send(user);
     } catch (error) {
       console.error(error);
@@ -193,9 +203,27 @@ const UserController = {
     } catch (error) {
       console.error(error);
     }
+  },
+  async checkIfFollows(req, res) {
+    try {
+      const userLogged = await User.findById(req.user._id);
+      const user = await User.findById(req.params._id);
+  
+      if (!userLogged || !user) {
+        return res.status(404).json({ error: 'Uno o ambos usuarios no existen' });
+      }
+  
+      // Comprueba si el primer usuario sigue al segundo
+      const isUserLoggedFollowingUser = userLogged.following.includes(user._id);
+      return res.json({ isUserLoggedFollowingUser });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Error al verificar si los usuarios se siguen mutuamente' });
+    }
   }
 
 };
+
 
 
 module.exports = UserController;
